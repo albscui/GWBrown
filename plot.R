@@ -49,40 +49,6 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
     }
 }
 
-
-# plotheatmap <- function(df, filter="Ratios", colour, gene="All") {
-#     
-#     if (gene == "All") {
-#         heatmap <- ggplot(df, aes(x=GeneID,
-#                                   y=Bins,
-#                                   fill=Counts))
-#     } else if (gene=="Not HIS3") {
-#         genedata <- df[which(!df[, "GeneID"]=="HIS3"), ]
-# #         genedata$Bins2 <- factor(genedata$Bins, as.character(genedata$Bins))
-#         heatmap <- ggplot(genedata, aes(x=GeneID,
-#                                         y=Bins,
-#                                         fill=Counts))
-#     } else {
-#         genedata <- df[df$GeneID == gene, ]
-# #         genedata$Bins2 <- factor(genedata$Bins, as.character(genedata$Bins))
-#         heatmap <- ggplot(genedata, aes(x=GeneID,
-#                                         y=Bins,
-#                                         fill=Counts))
-#     }
-#     
-#     heatmap +
-#         geom_raster() +
-# #         theme_bw(base_size = 7) +
-#         scale_fill_gradient(low="black", high=colour) +
-# #         coord_fixed() +
-# # #         scale_y_discrete(expand=c(0,0), breaks=seq(1:1000, by=100)) +
-# # #         scale_x_continuous(expand=c(0,0), breaks=seq(1:length(heatmap$x),by=5)) +
-#         theme(axis.text.y = element_blank(), axis.text.x = element_blank())
-# #         ggtitle(paste("RNR3 expression distributions\nin", gene, "Cells", sep=' ')) +
-# #         ylab(paste("Bins of Intensity under", filter, "Filter", "(1000 breaks)", sep=" "))
-# }
-
-
 mapMedians <- function(df, colour) {
     heatmap <- ggplot(df, aes(x = C, y = R, fill = Median, label=GeneID))
     
@@ -97,7 +63,6 @@ mapMedians <- function(df, colour) {
         scale_y_discrete(expand=c(0,0), limits=rev(levels(df$R))) +
         ggtitle(paste("Median Values for GFP/RFP Intensity Ratios"))
 }
-
 
 plothist <- function(df, filter=NULL, by=NULL, geneGrp=NULL, gene=NULL, xlimit=NULL) {
     
@@ -121,3 +86,14 @@ plothist <- function(df, filter=NULL, by=NULL, geneGrp=NULL, gene=NULL, xlimit=N
 }
 
 
+
+plotHeatMap <- function(df, colour) {
+    df$Bins <- factor(df$Bins, levels = df$Bins)
+    
+    plot <- ggplot(df, aes(x=Colony, y=Bins, fill=Densities))
+    
+    plot + geom_raster()  +
+        theme(axis.text.y = element_blank()) +
+        scale_fill_gradient(low="black", high=colour) +
+        ggtitle("Distributions of cell densities")
+}

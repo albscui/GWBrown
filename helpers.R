@@ -46,3 +46,13 @@ getGeneGroup <- function(gene) {
     geneGroup <- geneGroups[which(geneGroups$GeneID == gene), "GeneGroup"]
     return(geneGroup)
 }
+
+subBinsDF <- function (df, colony="ALL", filter, plateNumber=NULL, ignore=NULL) {
+    if (!is.null(ignore)) {
+        subset <- df[which(!(df$Colony %in% ignore)), ]
+    }
+    
+    subset <- df[which(df$Filter == filter), ]
+    return(subset)
+}
+
