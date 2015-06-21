@@ -47,12 +47,57 @@ getGeneGroup <- function(gene) {
     return(geneGroup)
 }
 
-subBinsDF <- function (df, colony="ALL", filter, plateNumber=NULL, ignore=NULL) {
-    if (!is.null(ignore)) {
-        subset <- df[which(!(df$Colony %in% ignore)), ]
+subBinsDF <- function (df, filter=NULL, ignore=NULL, 
+                       colony=NULL, plateNumbers=NULL,
+                       gene=NULL) {
+    
+    subset <- NULL
+    
+    if (!is.null(ignore) & is.null(subset)) {
+        if (is.null(subset)) {
+            subset <- df[which(!(df$Colony %in% ignore)), ]
+        } else {
+            subset <- subset[which(!(subset$Colony %in% ignore)), ]
+        }
     }
     
-    subset <- df[which(df$Filter == filter), ]
+    if (!is.null(plateNumbers)) {
+        coordinates <- generate96Coord(plateNumbers)
+        if (is.null(subset)) {
+            subset <- df[which(df$Colony %in% coordinates), ]
+        } else {
+            subset <- subset[which(subset$Colony %in% coordinates), ]
+        }
+    }
+    
+    if (!is.null(colony)) {
+        if (is.null(subset)) {
+            subset <- df[which(df$Colony %in% colony), ]
+        } else {
+            subset <- subset[which(subset$Colony %in% colony), ]
+        }
+        
+    }
+    
+    if (!is.null(filter)) {
+        if (is.null(subset)) {
+            subset <- df[which(df$Filter == filter), ]
+        } else {
+            subset <- subset[which(subset$Filter == filter), ]
+        }
+        
+    }
+    
+    if (!is.null(gene)) {
+        if (is.null(subset)) {
+            subset <- df[which(df$GeneID == gene), ]
+        } else {
+            subset <- subset[which(subset$GeneID == gene), ]
+        }
+        
+    }
+    
+    subset <- droplevels(subset)
     return(subset)
 }
 

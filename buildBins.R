@@ -3,11 +3,11 @@ binData <- function(vector, f) {
     # cut sites depend on the vector
     # every set of cut sites amount to 101 numbers, equaling to 100 bins
     if (f == "GFP") {
-        cutsites = c(seq(0, 10000, by=50.2), 80000)
+        cutsites = c(seq(0, 200000, by=1000), 262150)
     } else if (f == "RFP") {
-        cutsites = c(seq(0, 5000, by= 25.1), 20000)
+        cutsites = c(seq(0, 5000, by= 25), 262100)
     } else if (f == "GFPRFPRatio") {
-        cutsites = c(seq(0, 10, by=0.0502), 800)
+        cutsites = c(seq(0, 100, by=0.5), 1191)
     }
     
     bins <- cut(vector, breaks=cutsites)
@@ -57,3 +57,4 @@ buildBins <- function(filelist) {
     return(df_out)
     
 }
+

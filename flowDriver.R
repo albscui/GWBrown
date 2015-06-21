@@ -13,10 +13,8 @@ plate2 <- generate96Coord(2)
 plate3 <- generate96Coord(3)
 plate4 <- generate96Coord(4)
 
+# list of colonies to ignore
+ignore <- read.table("ignore.txt")[, 1]
+
 # list the files in the present working directory
-files <- grep("[[:upper:][:digit:][:digit:]].csv$", 
-              list.files(path = getwd()), value = TRUE)
-
-temp <- buildBins(files)
-
-
+files <- grep("[[:upper:][:digit:][:digit:]].csv$", list.files(path = getwd()), value = TRUE)

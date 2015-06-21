@@ -88,12 +88,21 @@ plothist <- function(df, filter=NULL, by=NULL, geneGrp=NULL, gene=NULL, xlimit=N
 
 
 plotHeatMap <- function(df, colour) {
-    df$Bins <- factor(df$Bins, levels = df$Bins)
+
+    df$Bins <- as.character(df$Bins)
+    df$Bins <- factor(df$Bins, levels=unique(df$Bins))
+    df$Colony <- as.character(df$Colony)
+    df$Colony <- factor(df$Colony, levels=unique(df$Colony))
+
+    plot <- ggplot(df, aes(x=Colony, y=Bins, fill=Densities)) + geom_raster() +
+        scale_fill_gradient(low="black", high=colour)
+
+    axis_x_breaks <- levels(df$Colony)[seq(1, length(levels(df$Colony)), by=1)]
+    axis_y_breaks <- levels(df$Bins)[seq(1, 200, by=10)]
     
-    plot <- ggplot(df, aes(x=Colony, y=Bins, fill=Densities))
-    
-    plot + geom_raster()  +
-        theme(axis.text.y = element_blank()) +
-        scale_fill_gradient(low="black", high=colour) +
-        ggtitle("Distributions of cell densities")
+    plot + theme(axis.text.x = element_text(size = 3),
+                 axis.text.y = element_text(size = 8)) + 
+        scale_x_discrete(expand=c(0,0), breaks=axis_x_breaks) +
+        scale_y_discrete(expand=c(0,0), breaks=axis_y_breaks) + 
+        ggtitle(paste("Distributions of cell densities", colour))
 }
