@@ -1,6 +1,4 @@
 library(ggplot2)
-library(reshape2)
-
 
 multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
     # Multiple plot function
@@ -49,19 +47,25 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
     }
 }
 
-mapMedians <- function(df, colour) {
-    heatmap <- ggplot(df, aes(x = C, y = R, fill = Median, label=GeneID))
+mapCellCounts <- function(df, colour) {
+    filters <- c("GFP", "RFP", "GFP/RFP Ratios")
+    names(filters) <- c("green", "red", "yellow")
     
-    heatmap + 
+    heatmap <- ggplot(df, aes(x=Column, y=Row, fill = Median))
+    
+    heatmap +
         theme_bw() + theme(panel.border=element_blank(),
                            panel.grid.major=element_blank(),
-                           panel.grid.minor=element_blank()) +
-        geom_tile() + geom_text(aes(colour=factor(GeneID)), size=2) +
-        scale_colour_discrete(na.value="grey50", l=20) +
+                           panel.grid.minor=element_blank(),
+                           axis.text.x=element_text(size=12),
+                           axis.text.y=element_text(size=12)) +
+        geom_tile() +
+        geom_text(aes(label=GeneID, colour=factor(GeneID)), size=2) +
+        guides(colour=FALSE) +
         scale_fill_gradient(low="black", high=colour) +
         scale_x_continuous(expand=c(0,0), breaks=seq(1:24)) +
         scale_y_discrete(expand=c(0,0), limits=rev(levels(df$R))) +
-        ggtitle(paste("Median Values for GFP/RFP Intensity Ratios"))
+        ggtitle(paste("Median for ", filters[colour]))
 }
 
 plothist <- function(df, filter=NULL, by=NULL, geneGrp=NULL, gene=NULL, xlimit=NULL) {
@@ -88,6 +92,8 @@ plothist <- function(df, filter=NULL, by=NULL, geneGrp=NULL, gene=NULL, xlimit=N
 
 
 plotHeatMap <- function(df, colour) {
+    filters <- c("GFP", "RFP", "GFP/RFP Ratios")
+    names(filters) <- c("green", "red", "yellow")
 
     df$Bins <- as.character(df$Bins)
     df$Bins <- factor(df$Bins, levels=unique(df$Bins))
@@ -97,12 +103,20 @@ plotHeatMap <- function(df, colour) {
     plot <- ggplot(df, aes(x=Colony, y=Bins, fill=Densities)) + geom_raster() +
         scale_fill_gradient(low="black", high=colour)
 
-    axis_x_breaks <- levels(df$Colony)[seq(1, length(levels(df$Colony)), by=1)]
-    axis_y_breaks <- levels(df$Bins)[seq(1, 200, by=10)]
+    axis_x_breaks <- levels(df$Colony)[seq(1, length(levels(df$Colony)), by=5)]
+    axis_y_breaks <- levels(df$Bins)[seq(1, 201, by=1)]
     
-    plot + theme(axis.text.x = element_text(size = 3),
-                 axis.text.y = element_text(size = 8)) + 
+    return(plot + theme(axis.text.x = element_text(size = 6, angle = 90, vjust = 0.5),
+                 axis.text.y = element_blank(), axis.ticks=element_blank()) + 
         scale_x_discrete(expand=c(0,0), breaks=axis_x_breaks) +
         scale_y_discrete(expand=c(0,0), breaks=axis_y_breaks) + 
-        ggtitle(paste("Distributions of cell densities", colour))
+        ggtitle(paste("Distributions of cell densities for", filters[colour])))
 }
+
+gfp <- subBinsDF(bindata, filter="GFP", ignore=ignore, plateNumbers = 4)
+rfp <- subBinsDF(bindata, filter="RFP", ignore=ignore, plateNumbers = 4)
+ratio <- subBinsDF(bindata, filter="GFPRFPRatio", ignore=ignore, plateNumbers = 4)
+
+multiplot(plotHeatMap(gfp, "green"),
+          plotHeatMap(rfp, "red"), 
+          plotHeatMap(ratio, "yellow"), cols=1)

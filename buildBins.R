@@ -3,7 +3,7 @@ binData <- function(vector, f) {
     # cut sites depend on the vector
     # every set of cut sites amount to 101 numbers, equaling to 100 bins
     if (f == "GFP") {
-        cutsites = c(seq(0, 200000, by=1000), 262150)
+        cutsites = c(seq(0, 65000, by=325), 262150)
     } else if (f == "RFP") {
         cutsites = c(seq(0, 5000, by= 25), 262100)
     } else if (f == "GFPRFPRatio") {
