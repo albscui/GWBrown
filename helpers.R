@@ -43,8 +43,13 @@ getGeneID <- function(name) {
 }
 
 getGeneGroup <- function(gene) {
-    geneGroup <- geneGroups[which(geneGroups$GeneID == gene), "GeneGroup"]
+    geneGroup <- geneList[which(geneList$GeneID == gene), "GeneGroup"]
     return(geneGroup)
+}
+
+getGeneORF <- function(gene) {
+    ORF <- geneList[which(geneList$GeneID == gene), "ORF"]
+    return(ORF)
 }
 
 subBinsDF <- function (df, filter=NULL, ignore=NULL, 
@@ -89,12 +94,20 @@ subBinsDF <- function (df, filter=NULL, ignore=NULL,
     }
     
     if (!is.null(gene)) {
-        if (is.null(subset)) {
-            subset <- df[which(df$GeneID == gene), ]
+        if (substring(gene, 1, 3) == "not") {
+            gene <- substring(gene, 4, nchar(gene))
+            if (is.null(subset)) {
+                subset <- df[which(df$GeneID != gene), ]
+            } else {
+                subset <- subset[which(subset$GeneID != gene), ]
+            }
         } else {
-            subset <- subset[which(subset$GeneID == gene), ]
+            if (is.null(subset)) {
+                subset <- df[which(df$GeneID == gene), ]
+            } else {
+                subset <- subset[which(subset$GeneID == gene), ]
+            }
         }
-        
     }
     
     subset <- droplevels(subset)
